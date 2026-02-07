@@ -200,12 +200,17 @@
                     body: JSON.stringify({ name, body }),
                     signal: controller.signal
                 });
+                
 
                 clearTimeout(timeout);
 
                 if (!response.ok) {
                     throw new Error("Failed to save paste");
                 }
+                const responsedata= await response.json();
+                const key = responsedata?.data?.[0]?.post_key;
+                
+                window.location.href=`/${key}`
 
                 showStatus("Paste saved successfully!", "success");
                 pasteForm.reset();

@@ -29,6 +29,7 @@
     }
 
     .card {
+      position: relative;
       background: var(--card);
       border-radius: 8px;
       padding: 16px;
@@ -94,6 +95,18 @@
       padding: 4px 8px;
       font-size: 12px;
     }
+    .raw-body{
+      position: absolute;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #fff;
+      top: 6px;
+      right: 80px;
+      background: #334155;
+      padding: 4px 8px;
+      font-size: 12px;
+
+    }
 
     .status {
       margin-bottom: 8px;
@@ -119,7 +132,7 @@
     <div class="card">
 
       <div id="copyStatus" class="status">Copied ✓</div>
-
+    
       <div class="header">
         <div class="title"><%= data?.name %></div>
         <button onclick="copyLink()">Copy Link</button>
@@ -128,13 +141,7 @@
       <div id="pasteLink" class="link-box">
         <%= data?.post_key %>
       </div>
-
-      <div class="content">
-        <div id="pasteBody">
-          <%- data?.body %>
-        </div>
-        <button class="copy-body" onclick="copyBody()">Copy</button>
-      </div>
+      <div class="content"><div id="pasteBody"><%= data?.body %></div><button class="copy-body" onclick="copyBody()">Copy</button><a href='/raw/<%= data?.post_key %>' class="raw-body" onclick="">Raw</a></div>
 
       <!-- Footer -->
       <div class="footer">
