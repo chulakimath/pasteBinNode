@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Paste</title>
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #1e293b;
+            --error: #dc2626;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .container {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+        }
+
+        .card {
+            background: var(--card);
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+
+        h2 {
+            margin: 0 0 12px 0;
+            font-size: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            min-height: 200px;
+            resize: vertical;
+            font-family: monospace;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 11px;
+            margin-top: 3px;
+            color: #64748b;
+        }
+
+        .error-msg {
+            color: var(--error);
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-size: 14px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .status-box {
+            display: none;
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="card">
+
+            <h2>Create New Paste</h2>
+
+            <form id="pasteForm">
+
+                <div class="form-group">
+                    <label for="name">Title</label>
+                    <input type="text" id="name" maxlength="120" placeholder="Paste title" />
+                    <div class="error-msg" id="nameError">Title is required</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="body">Content</label>
+                    <textarea id="body" maxlength="10000" placeholder="Paste your code or text here..."></textarea>
+                    <div class="char-count" id="charCount">0 / 10000</div>
+                    <div class="error-msg" id="bodyError">Content cannot be empty</div>
+                </div>
+
+                <button type="submit" id="submitBtn" class="btn">Save Paste</button>
+            </form>
+
+            <div id="statusMessage" class="status-box"></div>
+
+        </div>
+    </div>
+
+    <script>
+        const pasteForm = document.getElementById('pasteForm');
+        const statusBox = document.getElementById('statusMessage');
+        const btn = document.getElementById('submitBtn');
+        const bodyField = document.getElementById('body');
+        const charCount = document.getElementById('charCount');
+
+        bodyField.addEventListener('input', () => {
+            charCount.textContent = `${bodyField.value.length} / 10000`;
+        });
+
+        pasteForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            resetErrors();
+
+            const name = document.getElementById('name').value.trim();
+            const body = bodyField.value.trim();
+
+            let isValid = true;
+
+            if (!name) {
+                showError('nameError');
+                isValid = false;
+            }
+
+            if (!body) {
+                showError('bodyError');
+                isValid = false;
+            }
+
+            if (!isValid) return;
+
+            setLoading(true);
+
+            try {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 10000);
+
+                const response = await fetch('/api/post', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, body }),
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeout);
+
+                if (!response.ok) {
+                    throw new Error("Failed to save paste");
+                }
+
+                showStatus("Paste saved successfully!", "success");
+                pasteForm.reset();
+                charCount.textContent = "0 / 10000";
+
+            } catch (err) {
+                showStatus(err.message || "Something went wrong", "error");
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        function showError(id) {
+            document.getElementById(id).style.display = 'block';
+        }
+
+        function resetErrors() {
+            document.querySelectorAll('.error-msg').forEach(e => e.style.display = 'none');
+            statusBox.style.display = 'none';
+        }
+
+        function setLoading(isLoading) {
+            btn.disabled = isLoading;
+            btn.textContent = isLoading ? "Saving..." : "Save Paste";
+        }
+
+        function showStatus(msg, type) {
+            statusBox.textContent = msg;
+            statusBox.className = `status-box ${type}`;
+            statusBox.style.display = 'block';
+        }
+    </script>
+
+</body>
+
+</html>

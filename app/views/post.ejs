@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= data?.name %></title>
+
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --primary: #6366f1;
+      --border: #e2e8f0;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .container {
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    button {
+      background: var(--primary);
+      border: none;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .link-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-bottom: 10px;
+      word-break: break-all;
+    }
+
+    .content {
+      position: relative;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 12px;
+      border-radius: 6px;
+      overflow: auto;
+      font-family: monospace;
+      white-space: pre-wrap;
+      line-height: 1.4;
+      font-size: 13px;
+    }
+
+    .copy-body {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: #334155;
+      padding: 4px 8px;
+      font-size: 12px;
+    }
+
+    .status {
+      margin-bottom: 8px;
+      font-size: 12px;
+      color: green;
+      display: none;
+    }
+
+    .footer {
+      margin-top: 14px;
+      text-align: center;
+    }
+
+    .new-btn {
+      background: #0f172a;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="card">
+
+      <div id="copyStatus" class="status">Copied ✓</div>
+
+      <div class="header">
+        <div class="title"><%= data?.name %></div>
+        <button onclick="copyLink()">Copy Link</button>
+      </div>
+
+      <div id="pasteLink" class="link-box">
+        <%= data?.post_key %>
+      </div>
+
+      <div class="content">
+        <div id="pasteBody">
+          <%- data?.body %>
+        </div>
+        <button class="copy-body" onclick="copyBody()">Copy</button>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <button class="new-btn" onclick="createNew()">+ Create New Paste</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let timer=null;
+    function showStatus(msg) {
+      clearTimeout(timer);
+      const status = document.getElementById("copyStatus");
+      status.innerText = msg;
+      status.style.display = "block";
+      timer=setTimeout(() => status.style.display = "none", 5000);
+    }
+
+    function copyLink() {
+      const text = document.getElementById("pasteLink").innerText;
+      navigator.clipboard.writeText(text).then(() => showStatus("Link copied ✓"));
+    }
+
+    function copyBody() {
+      const bodyText = document.getElementById("pasteBody").innerText;
+      navigator.clipboard.writeText(bodyText).then(() => showStatus("Content copied ✓"));
+    }
+
+    function createNew() {
+      window.location.href = "/";
+    }
+  </script>
+
+</body>
+
+</html>

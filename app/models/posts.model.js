@@ -27,4 +27,22 @@ const create = async (name, body, postId) => {
   const { rows } = await Pool.query(query, [postId, name, body]);
   return rows;
 };
-export default { count, create };
+const all = async (status = 1) => {
+  try {
+    const query = `SELECT * FROM posts WHERE status=$1`;
+    const { rows } = await Pool.query(query, [status]);
+    return rows;
+  } catch (e) {
+    console.log("posts.model.js->all", e);
+  }
+}
+const getByid = async (key) => {
+  try {
+    const query = `SELECT * FROM posts WHERE post_key=$1`
+    const { rows } = await Pool.query(query, [key])
+    return rows;
+  } catch (error) {
+    console.log("posts.model->getByid", e)
+  }
+}
+export default { count, create, all, getByid };
