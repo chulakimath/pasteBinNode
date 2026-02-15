@@ -135,7 +135,10 @@
     
       <div class="header">
         <div class="title"><%= data?.name %></div>
-        <button onclick="copyLink()">Copy Link</button>
+        <div>
+          <button onclick="copyLink()">Copy Link</button>
+          <button onclick="liveChangeMode()">Live Change Mode</button>
+        </div>
       </div>
 
       <div id="pasteLink" class="link-box">
@@ -161,11 +164,7 @@
       timer=setTimeout(() => status.style.display = "none", 5000);
     }
 
-    function copyLink() {
-      const text = document.getElementById("pasteLink").innerText;
-      navigator.clipboard.writeText(text).then(() => showStatus("Link copied ✓"));
-    }
-
+  
     function copyBody() {
       const bodyText = document.getElementById("pasteBody").innerText;
       navigator.clipboard.writeText(bodyText).then(() => showStatus("Content copied ✓"));
@@ -173,6 +172,14 @@
 
     function createNew() {
       window.location.href = "/";
+    }
+
+    function copyLink() {
+      navigator.clipboard.writeText(location.href)
+        .then(() => showStatus("Link copied ✓"));
+    }
+    function liveChangeMode(){
+       window.location.href = "/ws/<%= data?.post_key %>";
     }
   </script>
 
