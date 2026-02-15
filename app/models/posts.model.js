@@ -45,4 +45,14 @@ const getByid = async (key) => {
     console.log("posts.model->getByid", e)
   }
 }
+
+export const updateByid = async (key, body) => {
+  try {
+    const query = `update posts set body=$1 WHERE post_key=$2`
+    const { rows } = await Pool.query(query, [body, key])
+    return rows;
+  } catch (error) {
+    console.log("posts.model->getByid", e)
+  }
+}
 export default { count, create, all, getByid };
