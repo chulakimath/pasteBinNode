@@ -131,8 +131,8 @@
       <%= data?.post_key %>
     </div>
 
-    <textarea id="body" maxlength="10000"><%= data?.body %></textarea>
-    <div id="charCount" class="char-count">0 / 10000</div>
+    <textarea id="body" maxlength="1000000"><%= data?.body %></textarea>
+    <div id="charCount" class="char-count">0 / 1000000</div>
 
     <div class="actions">
       <button onclick="savePaste()">Save</button>
@@ -233,7 +233,7 @@
 
     // Character counter
     function updateCount() {
-      charCount.innerText = `${textarea.value.length} / 10000`;
+      charCount.innerText = `${textarea.value.length} / 1000000`;
     }
     textarea.addEventListener("input", updateCount);
     updateCount();
